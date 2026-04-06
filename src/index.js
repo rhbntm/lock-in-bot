@@ -18,13 +18,21 @@ const client = new Client({
 
 const focusRepository = new FocusRepository();
 const focusService = new FocusService(focusRepository);
+
 const userRepository = new UserRepository();
 const xpService = new XPService(userRepository);
-const focusStartCommand = new FocusStartCommand(focusService, xpService);
-const leaderboardCommand = new LeaderboardCommand(xpService);
-const leaderboardDisplayService = new LeaderboardDisplayService(xpService);
 
+const leaderboardDisplayService = new LeaderboardDisplayService(xpService);
+const focusStartCommand = new FocusStartCommand(
+  focusService,
+  xpService,
+  leaderboardDisplayService,
+  client
+);
+
+const leaderboardCommand = new LeaderboardCommand(xpService);
 const rankCommand = new RankCommand(xpService);
+
 client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
