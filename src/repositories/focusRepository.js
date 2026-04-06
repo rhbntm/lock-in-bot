@@ -3,13 +3,8 @@ export default class FocusRepository {
     this.sessions = [];
   }
 
-  async create(userId, duration) {
-    this.sessions.push({
-      userId,
-      duration,
-      startedAt: new Date(),
-    });
-
+  async create(session) {
+    this.sessions.push(session);
     console.log(this.sessions);
   }
 }

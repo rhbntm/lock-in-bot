@@ -4,6 +4,14 @@ export default class FocusService {
   }
 
   async start(userId, duration) {
-    await this.focusRepository.create(userId, duration);
+    const session = {
+      userId,
+      duration,
+      startedAt: new Date(),
+    };
+
+    await this.focusRepository.create(session);
+
+    return session;
   }
 }
