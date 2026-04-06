@@ -4,6 +4,11 @@ import FocusRepository from "./repositories/focusRepository.js";
 import FocusService from "./services/focusService.js";
 import FocusStartCommand from "./commands/focusStart.js";
 
+import UserRepository from "./repositories/userRepository.js";
+import XPService from "./services/xpService.js";
+import RankCommand from "./commands/rank.js";
+import LeaderboardCommand from "./commands/leaderboard.js";
+
 dotenv.config();
 
 const client = new Client({
@@ -12,14 +17,30 @@ const client = new Client({
 
 const focusRepository = new FocusRepository();
 const focusService = new FocusService(focusRepository);
-const focusStartCommand = new FocusStartCommand(focusService);
+const userRepository = new UserRepository();
+const xpService = new XPService(userRepository);
+const focusStartCommand = new FocusStartCommand(focusService, xpService);
+const leaderboardCommand = new LeaderboardCommand(xpService);
 
+const rankCommand = new RankCommand(xpService);
+client.once("ready", () => {
+  console.log(`✅ Logged in as ${client.user.tag}`);
+});
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "focus") {
     await focusStartCommand.execute(interaction);
   }
+
+  if (interaction.commandName === "rank") {
+    await rankCommand.execute(interaction);
+  }
+  
+  if (interaction.commandName === "leaderboard") {
+  await leaderboardCommand.execute(interaction);
+  }
+
 });
 
 client.login(process.env.DISCORD_TOKEN);

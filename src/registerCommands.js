@@ -12,28 +12,25 @@ const commands = [
         .setName("duration")
         .setDescription("Focus duration in minutes")
         .setRequired(true)
-    )
-    .toJSON(),
-];
+    ),
+
+  new SlashCommandBuilder()
+    .setName("rank")
+    .setDescription("See your total XP"),
+
+    new SlashCommandBuilder()
+  .setName("leaderboard")
+  .setDescription("View top XP rankings"),
+].map((command) => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 
-async function registerCommands() {
-  try {
-    console.log("Registering slash commands...");
+await rest.put(
+  Routes.applicationGuildCommands(
+    process.env.CLIENT_ID,
+    process.env.GUILD_ID
+  ),
+  { body: commands }
+);
 
-    await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID
-      ),
-      { body: commands }
-    );
-
-    console.log("✅ Slash commands registered!");
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-registerCommands();
+console.log("✅ Commands registered");
