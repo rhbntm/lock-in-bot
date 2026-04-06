@@ -8,6 +8,7 @@ import UserRepository from "./repositories/userRepository.js";
 import XPService from "./services/xpService.js";
 import RankCommand from "./commands/rank.js";
 import LeaderboardCommand from "./commands/leaderboard.js";
+import LeaderboardDisplayService from "./services/leaderboardDisplayService.js";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ const userRepository = new UserRepository();
 const xpService = new XPService(userRepository);
 const focusStartCommand = new FocusStartCommand(focusService, xpService);
 const leaderboardCommand = new LeaderboardCommand(xpService);
+const leaderboardDisplayService = new LeaderboardDisplayService(xpService);
 
 const rankCommand = new RankCommand(xpService);
 client.once("ready", () => {

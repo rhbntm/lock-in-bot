@@ -1,7 +1,9 @@
 export default class FocusStartCommand {
-  constructor(focusService, xpService) {
+  constructor(focusService, xpService, leaderboardDisplayService, client) {
     this.focusService = focusService;
     this.xpService = xpService;
+    this.leaderboardDisplayService = leaderboardDisplayService;
+    this.client = client;
   }
 
   async execute(interaction) {
@@ -11,22 +13,26 @@ export default class FocusStartCommand {
 
     const session = await this.focusService.start(
       interaction.user.id,
-      duration
+      duration,
     );
 
-    await interaction.editReply(
-      `🎯 Locking in for ${duration} minute(s)!`
+    await interaction.editReply(`🎯 Locking in for ${duration} minute(s)!`);
+
+setTimeout(
+  async () => {
+    const totalXP = await this.xpService.rewardFocus(session.userId, duration);
+
+    await interaction.followUp(
+      `🎉 Focus complete for <@${session.userId}>!\n✨ +${duration} XP\n🏆 Total XP: ${totalXP}`,
     );
 
-    setTimeout(async () => {
-      const totalXP = await this.xpService.rewardFocus(
-        session.userId,
-        duration
-      );
+    const channel = await this.client.channels.fetch(
+      process.env.LEADERBOARD_CHANNEL_ID,
+    );
 
-      await interaction.followUp(
-        `🎉 Focus complete for <@${session.userId}>!\n✨ +${duration} XP\n🏆 Total XP: ${totalXP}`
-      );
-    }, duration * 60 * 1000);
+    await this.leaderboardDisplayService.update(channel);
+  },
+  duration * 60 * 1000,
+);
   }
 }
