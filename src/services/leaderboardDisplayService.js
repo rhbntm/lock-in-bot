@@ -1,5 +1,5 @@
 export default class LeaderboardDisplayService {
-  constructor(xpService) {
+  constructor({ xpService }) {
     this.xpService = xpService;
   }
 

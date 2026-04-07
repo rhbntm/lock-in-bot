@@ -1,5 +1,5 @@
 export default class XPService {
-  constructor(userRepository) {
+  constructor({ userRepository }) {
     this.userRepository = userRepository;
   }
 

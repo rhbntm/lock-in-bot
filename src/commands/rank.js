@@ -1,5 +1,5 @@
 export default class RankCommand {
-  constructor(xpService) {
+  constructor({ xpService }) {
     this.xpService = xpService;
   }
 

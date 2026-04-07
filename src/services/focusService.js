@@ -1,5 +1,5 @@
 export default class FocusService {
-  constructor(focusRepository) {
+  constructor({ focusRepository }) {
     this.focusRepository = focusRepository;
   }
 

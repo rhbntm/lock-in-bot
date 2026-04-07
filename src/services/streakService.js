@@ -1,5 +1,5 @@
 export default class StreakService {
-  constructor(streakRepository) {
+  constructor({ streakRepository }) {
     this.streakRepository = streakRepository;
   }
 

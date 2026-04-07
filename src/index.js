@@ -1,16 +1,6 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
-import FocusRepository from "./repositories/focusRepository.js";
-import FocusService from "./services/focusService.js";
-import FocusStartCommand from "./commands/focusStart.js";
-
-import UserRepository from "./repositories/userRepository.js";
-import XPService from "./services/xpService.js";
-import RankCommand from "./commands/rank.js";
-import LeaderboardCommand from "./commands/leaderboard.js";
-import LeaderboardDisplayService from "./services/leaderboardDisplayService.js";
-import StreakRepository from "./repositories/streakRepository.js";
-import StreakService from "./services/streakService.js";
+import { createContainer } from "./container.js";
 
 dotenv.config();
 
@@ -18,28 +8,12 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds],
 });
 
-const focusRepository = new FocusRepository();
-const focusService = new FocusService(focusRepository);
-
-const userRepository = new UserRepository();
-const xpService = new XPService(userRepository);
-
-const leaderboardDisplayService = new LeaderboardDisplayService(xpService);
-
-const streakRepository = new StreakRepository();
-const streakService = new StreakService(streakRepository);
-
-const focusStartCommand = new FocusStartCommand(
-  focusService,
-  xpService,
+const {
+  focusStartCommand,
+  leaderboardCommand,
+  rankCommand,
   leaderboardDisplayService,
-  streakService,
-  client
-);
-
-const leaderboardCommand = new LeaderboardCommand(xpService);
-const rankCommand = new RankCommand(xpService);
-
+} = createContainer(client);
 
 client.once("clientReady", async () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
@@ -57,17 +31,16 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "focus") {
-    await focusStartCommand.execute(interaction);
+    return await focusStartCommand.execute(interaction);
   }
 
   if (interaction.commandName === "rank") {
-    await rankCommand.execute(interaction);
-  }
-  
-  if (interaction.commandName === "leaderboard") {
-  await leaderboardCommand.execute(interaction);
+    return await rankCommand.execute(interaction);
   }
 
+  if (interaction.commandName === "leaderboard") {
+    return await leaderboardCommand.execute(interaction);
+  }
 });
 
 client.login(process.env.DISCORD_TOKEN);
