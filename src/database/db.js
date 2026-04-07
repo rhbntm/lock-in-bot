@@ -4,12 +4,19 @@ const db = new sqlite3.Database("./lockin.db");
 
 db.serialize(() => {
   db.run(`
-  CREATE TABLE IF NOT EXISTS streaks (
-    user_id TEXT PRIMARY KEY,
-    streak_count INTEGER DEFAULT 1,
-    last_completed_date TEXT
-  )
-`);
+    CREATE TABLE IF NOT EXISTS streaks (
+      user_id TEXT PRIMARY KEY,
+      streak_count INTEGER DEFAULT 1,
+      last_completed_date TEXT
+    )
+  `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS weekly_xp (
+      userId TEXT PRIMARY KEY,
+      xp INTEGER DEFAULT 0,
+      weekStart TEXT
+    )
+  `);
 });
 
 export default db;

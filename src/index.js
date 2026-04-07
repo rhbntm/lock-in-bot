@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
+import cron from "node-cron";
 import { createContainer } from "./container.js";
 
 dotenv.config();
@@ -13,18 +14,31 @@ const {
   leaderboardCommand,
   rankCommand,
   leaderboardDisplayService,
+  weeklyLeaderboardDisplayService, // ← weekly leaderboard
 } = createContainer(client);
 
 client.once("clientReady", async () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 
-  const channel = await client.channels.fetch(
+  // --- All-time leaderboard ---
+  const leaderboardChannel = await client.channels.fetch(
     process.env.LEADERBOARD_CHANNEL_ID
   );
+  await leaderboardDisplayService.update(leaderboardChannel);
 
-  await leaderboardDisplayService.update(channel);
+  // --- Weekly leaderboard ---
+  const weeklyChannel = await client.channels.fetch(
+    process.env.WEEKLY_LEADERBOARD_CHANNEL_ID
+  );
+  await weeklyLeaderboardDisplayService.update(weeklyChannel);
 
-  console.log("🏆 Leaderboard rendered on startup");
+  console.log("🏆 Leaderboards rendered on startup");
+
+  // --- CRON JOB: Auto-update weekly leaderboard every Sunday midnight ---
+  cron.schedule("0 0 * * 0", async () => {
+    console.log("♻️ Updating weekly leaderboard...");
+    await weeklyLeaderboardDisplayService.update(weeklyChannel);
+  });
 });
 
 client.on("interactionCreate", async (interaction) => {

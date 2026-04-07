@@ -10,6 +10,8 @@ import LeaderboardDisplayService from "./services/leaderboardDisplayService.js";
 
 import StreakRepository from "./repositories/streakRepository.js";
 import StreakService from "./services/streakService.js";
+import WeeklyXPService from "./services/weeklyXPService.js";
+import WeeklyLeaderboardDisplayService from "./services/weeklyLeaderboardDisplayService.js";
 
 export function createContainer(client) {
   const focusRepository = new FocusRepository();
@@ -52,10 +54,16 @@ export function createContainer(client) {
     xpService,
   });
 
+    const weeklyXPService = new WeeklyXPService({ userRepository });
+    const weeklyLeaderboardDisplayService = new WeeklyLeaderboardDisplayService({ weeklyXPService });
+
+
   return {
     focusStartCommand,
     leaderboardCommand,
     rankCommand,
     leaderboardDisplayService,
+    weeklyXPService,
+    weeklyLeaderboardDisplayService,
   };
 }
