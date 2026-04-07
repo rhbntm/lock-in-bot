@@ -1,13 +1,10 @@
 export default class LeaderboardDisplayService {
   constructor(xpService) {
     this.xpService = xpService;
-    this.message = null; // temporary in-memory
   }
 
   async update(channel) {
     const leaderboard = await this.xpService.getLeaderboard();
-
-    if (leaderboard.length === 0) return;
 
     const medals = ["🥇", "🥈", "🥉"];
 
@@ -19,10 +16,18 @@ export default class LeaderboardDisplayService {
     const content =
       `🏆 **Live Productivity Leaderboard**\n\n${lines.join("\n")}`;
 
-    if (!this.message) {
-      this.message = await channel.send(content);
+    const messages = await channel.messages.fetch({ limit: 10 });
+
+    const existingMessage = messages.find(
+      (msg) =>
+        msg.author.id === channel.client.user.id &&
+        msg.content.includes("Live Productivity Leaderboard")
+    );
+
+    if (existingMessage) {
+      await existingMessage.edit(content);
     } else {
-      await this.message.edit(content);
+      await channel.send(content);
     }
   }
 }

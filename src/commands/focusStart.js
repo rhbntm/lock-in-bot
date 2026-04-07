@@ -1,8 +1,9 @@
 export default class FocusStartCommand {
-  constructor(focusService, xpService, leaderboardDisplayService, client) {
+  constructor(focusService, xpService, leaderboardDisplayService, streakService, client) {
     this.focusService = focusService;
     this.xpService = xpService;
     this.leaderboardDisplayService = leaderboardDisplayService;
+    this.streakService = streakService;
     this.client = client;
   }
 
@@ -21,9 +22,13 @@ export default class FocusStartCommand {
 setTimeout(
   async () => {
     const totalXP = await this.xpService.rewardFocus(session.userId, duration);
+    const streak = await this.streakService.update(session.userId);
 
     await interaction.followUp(
-      `🎉 Focus complete for <@${session.userId}>!\n✨ +${duration} XP\n🏆 Total XP: ${totalXP}`,
+      `🎉 Lock in complete for <@${session.userId}>!
+    ✨ +${duration} XP
+    🏆 Total XP: ${totalXP}
+    🔥 Streak: ${streak} day(s)`,
     );
 
     const channel = await this.client.channels.fetch(
