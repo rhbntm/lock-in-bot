@@ -23,6 +23,16 @@ db.serialize(() => {
       weekStart TEXT
     )
   `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS focus_sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      duration INTEGER NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL,
+      status TEXT DEFAULT 'active'
+    )
+  `);
 });
 
 export default db;

@@ -37,11 +37,15 @@ export function createContainer(client) {
     streakRepository,
   });
 
+  const weeklyXPService = new WeeklyXPService({ userRepository });
+
   const focusStartCommand = new FocusStartCommand({
     focusService,
     xpService,
+    weeklyXPService,
     leaderboardDisplayService,
     streakService,
+    focusRepository,
     client,
   });
 
@@ -54,8 +58,7 @@ export function createContainer(client) {
     xpService,
   });
 
-    const weeklyXPService = new WeeklyXPService({ userRepository });
-    const weeklyLeaderboardDisplayService = new WeeklyLeaderboardDisplayService({ weeklyXPService });
+  const weeklyLeaderboardDisplayService = new WeeklyLeaderboardDisplayService({ weeklyXPService });
 
 
   return {

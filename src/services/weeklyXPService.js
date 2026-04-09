@@ -22,6 +22,14 @@ export default class weeklyXPService {
     return this.userRepository.getWeeklyLeaderboard(weekStart);
   }
 
+  // Reset all weekly XP entries for new week
+  async resetWeekly() {
+    const newWeekStart = this.getWeekStart();
+    // This would typically clear and reset entries; for now we rely on 
+    // the logic in addXP() that auto-resets when weekStart changes
+    console.log(`📅 Weekly XP reset triggered for week starting ${newWeekStart}`);
+  }
+
   getWeekStart() {
     const now = new Date();
     const day = now.getDay(); // 0 = Sunday

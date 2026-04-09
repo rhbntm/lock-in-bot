@@ -36,8 +36,13 @@ client.once("clientReady", async () => {
 
   // --- CRON JOB: Auto-update weekly leaderboard every Sunday midnight ---
   cron.schedule("0 0 * * 0", async () => {
-    console.log("♻️ Updating weekly leaderboard...");
-    await weeklyLeaderboardDisplayService.update(weeklyChannel);
+    console.log("♻️ Rolling over weekly XP and updating weekly leaderboard...");
+    try {
+      await weeklyLeaderboardDisplayService.resetWeekly?.();
+      await weeklyLeaderboardDisplayService.update(weeklyChannel);
+    } catch (error) {
+      console.error("Error in weekly reset cron job:", error);
+    }
   });
 });
 
