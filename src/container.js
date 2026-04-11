@@ -12,6 +12,7 @@ import StreakRepository from "./repositories/streakRepository.js";
 import StreakService from "./services/streakService.js";
 import WeeklyXPService from "./services/weeklyXPService.js";
 import WeeklyLeaderboardDisplayService from "./services/weeklyLeaderboardDisplayService.js";
+import FocusRecoveryService from "./services/focusRecoveryService.js";
 
 export function createContainer(client) {
   const focusRepository = new FocusRepository();
@@ -60,6 +61,12 @@ export function createContainer(client) {
 
   const weeklyLeaderboardDisplayService = new WeeklyLeaderboardDisplayService({ weeklyXPService });
 
+  const focusRecoveryService = new FocusRecoveryService({
+    focusRepository,
+    xpService,
+    weeklyXPService,
+    streakService,
+  });
 
   return {
     focusStartCommand,
@@ -68,5 +75,6 @@ export function createContainer(client) {
     leaderboardDisplayService,
     weeklyXPService,
     weeklyLeaderboardDisplayService,
+    focusRecoveryService,
   };
 }

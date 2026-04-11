@@ -15,6 +15,7 @@ const {
   rankCommand,
   leaderboardDisplayService,
   weeklyLeaderboardDisplayService, // ← weekly leaderboard
+  focusRecoveryService,
 } = createContainer(client);
 
 client.once("clientReady", async () => {
@@ -33,6 +34,9 @@ client.once("clientReady", async () => {
   await weeklyLeaderboardDisplayService.update(weeklyChannel);
 
   console.log("🏆 Leaderboards rendered on startup");
+
+  // --- Recovery service: check for sessions that expired while bot was offline ---
+  await focusRecoveryService.recoverSessions();
 
   // --- CRON JOB: Auto-update weekly leaderboard every Sunday midnight ---
   cron.schedule("0 0 * * 0", async () => {
