@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 
-const db = new sqlite3.Database("./lockin.db");
+const db = new sqlite3.Database("./data/lockin.db");
 
 db.serialize(() => {
   db.run(`
