@@ -13,32 +13,42 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VM_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_ed25519
-          ssh-keyscan -p ${{ secrets.VM_PORT || 22 }} ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy to VM
-        run: |
-          ssh -p ${{ secrets.VM_PORT || 22 }} \
-          ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
-
+      - name: Deploy to VM via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          port: ${{ secrets.VM_PORT || 22 }}
+          script: |
             set -e
 
-            echo "🚀 Pulling latest code..."
-            cd lock-in-bot || exit 1
+            echo "🚀 Starting deployment..."
 
+            # Go to project folder
+            cd lock-in-bot || {
+              echo "📁 Repo not found, cloning..."
+              git clone https://github.com/YOUR_USERNAME/lock-in-bot.git
+              cd lock-in-bot
+            }
+
+            echo "🔄 Pulling latest code..."
+            git reset --hard
             git pull origin main
 
             echo "📦 Installing dependencies..."
             npm install
 
-            echo "🔄 Restarting Service
-            npm start
+            echo "⚙️ Ensuring PM2 is installed..."
+            if ! command -v pm2 &> /dev/null
+            then
+              npm install -g pm2
+            fi
+
+            echo "🔄 Restarting bot..."
+
+            pm2 restart lock-in-bot || pm2 start src/index.js --name lock-in-bot
+
+            pm2 save
 
             echo "✅ Deployment complete!"
-          EOF
