@@ -28,7 +28,7 @@ jobs:
             # Go to project folder
             cd lock-in-bot || {
               echo "📁 Repo not found, cloning..."
-              git clone https://github.com/YOUR_USERNAME/lock-in-bot.git
+              git clone https://github.com/rhbntm/lock-in-bot.git
               cd lock-in-bot
             }
 
@@ -36,19 +36,13 @@ jobs:
             git reset --hard
             git pull origin main
 
-            echo "📦 Installing dependencies..."
-            npm install
+            echo "🐳 Ensuring Docker Compose is available..."
+            docker compose version || {
+              echo "❌ Docker Compose not installed on VM"
+              exit 1
+            }
 
-            echo "⚙️ Ensuring PM2 is installed..."
-            if ! command -v pm2 &> /dev/null
-            then
-              npm install -g pm2
-            fi
-
-            echo "🔄 Restarting bot..."
-
-            pm2 restart lock-in-bot || pm2 start src/index.js --name lock-in-bot
-
-            pm2 save
+            echo "📦 Building and starting container..."
+            docker compose up --build -d
 
             echo "✅ Deployment complete!"
