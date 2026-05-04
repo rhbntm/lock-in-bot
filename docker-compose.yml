@@ -9,3 +9,10 @@ services:
     container_name: lock-in-bot
 
     restart: unless-stopped
+
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      CLIENT_ID: ${CLIENT_ID}
+      GUILD_ID: ${GUILD_ID}
+      LEADERBOARD_CHANNEL_ID: ${LEADERBOARD_CHANNEL_ID}
+      WEEKLY_LEADERBOARD_CHANNEL_ID: ${WEEKLY_LEADERBOARD_CHANNEL_ID}
